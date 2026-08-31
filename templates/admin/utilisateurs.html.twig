@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Utilisateurs — POISSON VIP{% endblock %}
+
+{% block body %}
+    <h1 class="h4 mb-3">Utilisateurs</h1>
+    {{ include('admin/_menu.html.twig', {actif: 'utilisateurs'}) }}
+
+    <form method="get" class="mb-3 d-flex gap-2" style="max-width: 22rem;">
+        <select class="form-select form-select-sm" name="role" aria-label="Filtrer par role">
+            <option value="">Tous les roles</option>
+            {% for role in enum('App\\Enum\\Role').cases() %}
+                <option value="{{ role.value }}" {{ roleFiltre and roleFiltre.value == role.value ? 'selected' }}>{{ role.value|capitalize }}</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-sm btn-marine" type="submit">Filtrer</button>
+    </form>
+
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light"><tr><th>Nom</th><th>Contact</th><th>Role</th><th>Etat</th><th></th></tr></thead>
+                <tbody>
+                {% for utilisateur in utilisateurs %}
+                    <tr>
+                        <td>{{ utilisateur.nomComplet }}<div class="small text-muted">Inscrit le {{ utilisateur.dateCreation|date('d/m/Y') }}</div></td>
+                        <td class="small text-muted">{{ utilisateur.email }}<br>{{ utilisateur.telephone }}</td>
+                        <td><span class="badge bg-secondary">{{ utilisateur.role.value }}</span></td>
+                        <td>
+                            {% if utilisateur.estActif %}<span class="badge bg-success">Actif</span>{% else %}<span class="badge bg-danger">Suspendu</span>{% endif %}
+                            {% if not utilisateur.estVerifie %}<span class="badge bg-warning text-dark">Non verifie</span>{% endif %}
+                        </td>
+                        <td class="text-end">
+                            <form method="post" action="{{ path('admin_utilisateur_activation', {id: utilisateur.id}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf_token('activation' ~ utilisateur.id) }}">
+                                <button class="btn btn-sm {{ utilisateur.estActif ? 'btn-outline-danger' : 'btn-outline-success' }}" type="submit">
+                                    {{ utilisateur.estActif ? 'Suspendre' : 'Reactiver' }}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5" class="text-muted">Aucun utilisateur.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

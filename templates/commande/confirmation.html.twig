@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande confirmee — POISSON VIP{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-lg-7 text-center">
+            <i class="bi bi-check-circle-fill display-4 text-success"></i>
+            <h1 class="h4 mt-3">Merci, votre commande est enregistree</h1>
+            <p class="text-muted">Numero de commande : <strong>{{ commande.numeroCommande }}</strong></p>
+            <p class="fs-5">{{ commande.montantTotal|ariary }}</p>
+            {% if commande.creneauLivraisonDebut %}
+                <p>Creneau souhaite : {{ commande.creneauLivraisonDebut|date('d/m/Y H:i') }} — {{ commande.creneauLivraisonFin|date('H:i') }}</p>
+            {% endif %}
+
+            <div class="d-flex flex-wrap gap-2 justify-content-center mt-4">
+                <a class="btn btn-marine" href="{{ path('app_commande_detail', {numero: commande.numeroCommande}) }}">Suivre ma commande</a>
+                <a class="btn btn-outline-marine" href="{{ path('app_commande_facture', {numero: commande.numeroCommande}) }}">Telecharger le recu</a>
+                <a class="btn btn-link" href="{{ path('app_catalogue') }}">Continuer mes achats</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ produit.id ? 'Modifier un produit' : 'Nouveau produit' }} — POISSON VIP{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h5 mb-3">{{ produit.id ? 'Modifier un produit' : 'Nouveau produit' }}</h1>
+                    {{ form_start(formulaire) }}
+                    <div class="row g-3">
+                        <div class="col-md-6">{{ form_row(formulaire.nom) }}</div>
+                        <div class="col-md-6">{{ form_row(formulaire.espece) }}</div>
+                        <div class="col-md-6">{{ form_row(formulaire.categorie) }}</div>
+                        <div class="col-md-6">{{ form_row(formulaire.unite) }}</div>
+                        <div class="col-md-6">{{ form_row(formulaire.prixUnitaire) }}</div>
+                        <div class="col-md-6">{{ form_row(formulaire.stockDisponible) }}</div>
+                        <div class="col-12">{{ form_row(formulaire.preparationsDispo) }}</div>
+                        <div class="col-12">{{ form_row(formulaire.description) }}</div>
+                        <div class="col-12">{{ form_row(formulaire.photoUrl) }}</div>
+                        <div class="col-12">{{ form_row(formulaire.estActif) }}</div>
+                    </div>
+                    <button class="btn btn-marine mt-3" type="submit">Enregistrer</button>
+                    <a class="btn btn-link" href="{{ path('fournisseur_produits') }}">Annuler</a>
+                    {{ form_end(formulaire) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

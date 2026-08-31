@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commandes recues — POISSON VIP{% endblock %}
+
+{% block body %}
+    <h1 class="h4 mb-3">Commandes recues</h1>
+    {{ include('fournisseur/_menu.html.twig', {actif: 'commandes'}) }}
+
+    {% for commande in commandes %}
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div>
+                        <strong>{{ commande.numeroCommande }}</strong>
+                        <div class="small text-muted">{{ commande.dateCommande|date('d/m/Y H:i') }} — {{ commande.zoneLivraison.nomZone }}</div>
+                    </div>
+                    <span class="badge bg-{{ commande.statut.couleur }}">{{ commande.statut.libelle }}</span>
+                    <form method="post" action="{{ path('fournisseur_commande_preparer', {id: commande.id}) }}" class="d-flex gap-2">
+                        <input type="hidden" name="_token" value="{{ csrf_token('preparer' ~ commande.id) }}">
+                        <select class="form-select form-select-sm" name="statut" style="max-width: 12rem;" aria-label="Nouveau statut">
+                            <option value="EN_PREPARATION">En preparation</option>
+                            <option value="EN_LIVRAISON">Prete pour la livraison</option>
+                        </select>
+                        <button class="btn btn-sm btn-marine" type="submit">Appliquer</button>
+                    </form>
+                </div>
+
+                <ul class="list-unstyled small mt-3 mb-0">
+                    {% for ligne in commande.lignes %}
+                        <li class="d-flex justify-content-between border-bottom py-1">
+                            <span>{{ ligne.quantite }} &times; {{ ligne.produit.nom }}{% if ligne.preparationChoisie %} <em class="text-muted">({{ ligne.preparationChoisie }})</em>{% endif %}</span>
+                            <span>{{ ligne.sousTotal|ariary }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-light border">Aucune commande recue pour le moment.</div>
+    {% endfor %}
+{% endblock %}

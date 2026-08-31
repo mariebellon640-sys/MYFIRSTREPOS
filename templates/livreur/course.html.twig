@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Course {{ livraison.commande.numeroCommande }} — POISSON VIP{% endblock %}
+
+{% block body %}
+    {% set commande = livraison.commande %}
+
+    <h1 class="h4 mb-1">Course {{ commande.numeroCommande }}</h1>
+    <p class="text-muted">{{ commande.zoneLivraison.nomZone }} — {{ commande.zoneLivraison.commune }}</p>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-muted">Client</h2>
+                    <p class="mb-1">{{ commande.client.utilisateur.nomComplet }} — <a href="tel:{{ commande.client.utilisateur.telephone }}">{{ commande.client.utilisateur.telephone }}</a></p>
+                    <p class="mb-0">{{ commande.adresseLivraison }}</p>
+                    {% if commande.adresseLivraison.pointRepere %}<p class="small text-muted mb-0">Repere : {{ commande.adresseLivraison.pointRepere }}</p>{% endif %}
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-muted">Colis</h2>
+                    <ul class="list-unstyled small mb-3">
+                        {% for ligne in commande.lignes %}
+                            <li class="d-flex justify-content-between border-bottom py-1"><span>{{ ligne.quantite }} &times; {{ ligne.produit.nom }}</span><span>{{ ligne.sousTotal|ariary }}</span></li>
+                        {% endfor %}
+                    </ul>
+                    <div class="d-flex justify-content-between fw-bold"><span>Total a encaisser</span>
+                        <span>{{ commande.paiement and commande.paiement.modePaiement.value == 'ESPECES_LIVRAISON' ? commande.montantTotal|ariary : 'Deja regle' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-muted">Mettre a jour la course</h2>
+                    <form method="post" action="{{ path('livreur_course_statut', {id: livraison.id}) }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('course' ~ livraison.id) }}">
+                        <div class="mb-3">
+                            <label class="form-label" for="statut">Statut</label>
+                            <select class="form-select" id="statut" name="statut">
+                                <option value="EN_COURS" {{ livraison.statut.value == 'EN_COURS' ? 'selected' }}>Course demarree</option>
+                                <option value="LIVREE">Colis remis au client</option>
+                                <option value="ECHOUEE">Livraison impossible</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="commentaire">Commentaire</label>
+                            <textarea class="form-control" id="commentaire" name="commentaire" rows="2">{{ livraison.commentaire }}</textarea>
+                        </div>
+                        <button class="btn btn-marine w-100" type="submit">Enregistrer</button>
+                    </form>
+
+                    <hr>
+
+                    <button class="btn btn-outline-marine w-100" type="button" id="bouton-position">Partager ma position</button>
+                    <p class="small text-muted mt-2 mb-0" id="etat-position">La position est transmise au client pendant la course.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        const bouton = document.getElementById('bouton-position');
+        const etat = document.getElementById('etat-position');
+        const urlPosition = '{{ path('livreur_course_position', {id: livraison.id}) }}';
+        let veille = null;
+
+        async function transmettre(position) {
+            const reponse = await fetch(urlPosition, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({latitude: position.coords.latitude, longitude: position.coords.longitude})
+            });
+
+            etat.textContent = reponse.ok
+                ? 'Position transmise a ' + new Date().toLocaleTimeString('fr-FR')
+                : 'La transmission de la position a echoue.';
+        }
+
+        bouton.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                etat.textContent = 'La geolocalisation n\'est pas disponible sur cet appareil.';
+                return;
+            }
+
+            if (veille !== null) {
+                navigator.geolocation.clearWatch(veille);
+                veille = null;
+                bouton.textContent = 'Partager ma position';
+                etat.textContent = 'Partage de position interrompu.';
+                return;
+            }
+
+            veille = navigator.geolocation.watchPosition(transmettre, () => {
+                etat.textContent = 'Acces a la position refuse.';
+            }, {enableHighAccuracy: true, maximumAge: 15000});
+
+            bouton.textContent = 'Arreter le partage';
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Promotions — POISSON VIP{% endblock %}
+
+{% block body %}
+    <h1 class="h4 mb-3">Codes promotionnels</h1>
+    {{ include('admin/_menu.html.twig', {actif: 'promotions'}) }}
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light"><tr><th>Code</th><th>Reduction</th><th>Validite</th><th class="text-end">Utilisations</th></tr></thead>
+                        <tbody>
+                        {% for promo in promotions %}
+                            <tr>
+                                <td><code>{{ promo.code }}</code></td>
+                                <td>{{ promo.typeReduction.value == 'POURCENTAGE' ? promo.valeur ~ ' %' : promo.valeur|ariary }}</td>
+                                <td class="small text-muted">{{ promo.dateDebut|date('d/m/Y') }} → {{ promo.dateFin|date('d/m/Y') }}</td>
+                                <td class="text-end">{{ promo.utilisationActuelle }}{{ promo.utilisationMax ? ' / ' ~ promo.utilisationMax }}</td>
+                            </tr>
+                        {% else %}
+                            <tr><td colspan="4" class="text-muted">Aucun code promotionnel.</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm"><div class="card-body">
+                <h2 class="h6 text-uppercase text-muted">Nouveau code</h2>
+                <form method="post">
+                    <input type="hidden" name="_token" value="{{ csrf_token('promo') }}">
+                    <div class="mb-2"><label class="form-label" for="code">Code</label><input class="form-control form-control-sm text-uppercase" id="code" name="code" required></div>
+                    <div class="mb-2"><label class="form-label" for="type">Type</label>
+                        <select class="form-select form-select-sm" id="type" name="type">
+                            <option value="POURCENTAGE">Pourcentage</option>
+                            <option value="MONTANT_FIXE">Montant fixe</option>
+                        </select>
+                    </div>
+                    <div class="mb-2"><label class="form-label" for="valeur">Valeur</label><input class="form-control form-control-sm" type="number" min="0" step="1" id="valeur" name="valeur" required></div>
+                    <div class="mb-2"><label class="form-label" for="debut">Debut</label><input class="form-control form-control-sm" type="date" id="debut" name="debut" required></div>
+                    <div class="mb-2"><label class="form-label" for="fin">Fin</label><input class="form-control form-control-sm" type="date" id="fin" name="fin" required></div>
+                    <div class="mb-3"><label class="form-label" for="max">Utilisations max.</label><input class="form-control form-control-sm" type="number" min="0" id="max" name="max" placeholder="Illimite"></div>
+                    <button class="btn btn-sm btn-marine w-100" type="submit">Creer le code</button>
+                </form>
+            </div></div>
+        </div>
+    </div>
+{% endblock %}

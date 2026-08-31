@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mot de passe oublie — POISSON VIP{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h4 mb-3">Mot de passe oublie</h1>
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label" for="identifiant">E-mail ou telephone</label>
+                            <input class="form-control" type="text" id="identifiant" name="identifiant" required autofocus>
+                        </div>
+                        <button class="btn btn-marine w-100" type="submit">Recevoir un code</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

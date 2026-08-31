@@ -1,0 +1,12 @@
+<ul class="nav nav-pills mb-4 gap-2 flex-wrap">
+    <li class="nav-item"><a class="nav-link {{ actif == 'tableau' ? 'active' }}" href="{{ path('admin_tableau_de_bord') }}">Tableau de bord</a></li>
+    <li class="nav-item"><a class="nav-link {{ actif == 'utilisateurs' ? 'active' }}" href="{{ path('admin_utilisateurs') }}">Utilisateurs</a></li>
+    <li class="nav-item"><a class="nav-link {{ actif == 'fournisseurs' ? 'active' }}" href="{{ path('admin_fournisseurs') }}">Fournisseurs</a></li>
+    <li class="nav-item"><a class="nav-link {{ actif == 'commandes' ? 'active' }}" href="{{ path('admin_commandes') }}">Commandes</a></li>
+    <li class="nav-item"><a class="nav-link {{ actif == 'paiements' ? 'active' }}" href="{{ path('admin_paiements') }}">Paiements</a></li>
+    <li class="nav-item"><a class="nav-link {{ actif == 'livraisons' ? 'active' }}" href="{{ path('admin_livraisons') }}">Livraisons</a></li>
+    <li class="nav-item"><a class="nav-link {{ actif == 'zones' ? 'active' }}" href="{{ path('admin_zones') }}">Zones</a></li>
+    <li class="nav-item"><a class="nav-link {{ actif == 'promotions' ? 'active' }}" href="{{ path('admin_promotions') }}">Promotions</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('support_litiges') }}">Litiges</a></li>
+    <li class="nav-item"><a class="nav-link" href="{{ path('support_avis') }}">Moderation</a></li>
+</ul>

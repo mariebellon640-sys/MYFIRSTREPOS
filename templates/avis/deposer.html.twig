@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Deposer un avis — POISSON VIP{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h5 mb-1">Votre avis</h1>
+                    <p class="text-muted small">Commande {{ commande.numeroCommande }} — publie apres moderation.</p>
+                    {{ form_start(formulaire) }}
+                    {{ form_row(formulaire.note) }}
+                    {{ form_row(formulaire.commentaire) }}
+                    <button class="btn btn-marine" type="submit">Publier</button>
+                    {{ form_end(formulaire) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Moderation des avis — POISSON VIP{% endblock %}
+
+{% block body %}
+    <h1 class="h4 mb-3">Moderation des avis</h1>
+    {% if is_granted('ROLE_ADMIN') %}{{ include('admin/_menu.html.twig', {actif: 'moderation'}) }}{% endif %}
+
+    {% for unAvis in avis %}
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <div class="d-flex flex-wrap justify-content-between gap-2">
+                    <div>
+                        <strong>{{ unAvis.produit ? unAvis.produit.nom : unAvis.fournisseur.nomCommercial }}</strong>
+                        <div class="small text-muted">{{ unAvis.client.utilisateur.nomComplet }} — {{ unAvis.dateCreation|date('d/m/Y H:i') }}</div>
+                    </div>
+                    <div>
+                        <span class="text-warning">{{ '★★★★★'|slice(0, unAvis.note) }}</span>
+                        {% if unAvis.estSignale %}<span class="badge bg-danger">Signale</span>{% endif %}
+                    </div>
+                </div>
+
+                <p class="mt-3 mb-3">{{ unAvis.commentaire ?: 'Aucun commentaire.' }}</p>
+
+                <form method="post" action="{{ path('support_avis_moderer', {id: unAvis.id}) }}" class="d-flex gap-2">
+                    <input type="hidden" name="_token" value="{{ csrf_token('moderer' ~ unAvis.id) }}">
+                    <button class="btn btn-sm btn-outline-success" type="submit" name="statut" value="APPROUVE">Approuver</button>
+                    <button class="btn btn-sm btn-outline-danger" type="submit" name="statut" value="REJETE">Rejeter</button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-light border">Aucun avis en attente de moderation.</div>
+    {% endfor %}
+{% endblock %}

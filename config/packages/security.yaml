@@ -1,0 +1,70 @@
+security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    providers:
+        utilisateurs:
+            entity:
+                class: App\Entity\Utilisateur
+                property: email
+
+    role_hierarchy:
+        ROLE_SUPPORT: [ROLE_USER]
+        ROLE_CLIENT: [ROLE_USER]
+        ROLE_FOURNISSEUR: [ROLE_USER]
+        ROLE_LIVREUR: [ROLE_USER]
+        ROLE_ADMIN: [ROLE_USER, ROLE_SUPPORT, ROLE_CLIENT, ROLE_FOURNISSEUR, ROLE_LIVREUR]
+
+    firewalls:
+        dev:
+            pattern: ^/(_profiler|_wdt|assets|build)/
+            security: false
+        api_login:
+            pattern: ^/api/login$
+            stateless: true
+            json_login:
+                check_path: /api/login
+                username_path: identifiant
+                password_path: motDePasse
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        api:
+            pattern: ^/api
+            stateless: true
+            provider: utilisateurs
+            jwt: ~
+        main:
+            lazy: true
+            provider: utilisateurs
+            custom_authenticator: App\Security\ConnexionAuthenticator
+            entry_point: App\Security\ConnexionAuthenticator
+            logout:
+                path: app_deconnexion
+                target: app_accueil
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+
+    access_control:
+        - { path: ^/connexion, roles: PUBLIC_ACCESS }
+        - { path: ^/inscription, roles: PUBLIC_ACCESS }
+        - { path: ^/verification-otp, roles: PUBLIC_ACCESS }
+        - { path: ^/mot-de-passe, roles: PUBLIC_ACCESS }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/docs, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/support, roles: ROLE_SUPPORT }
+        - { path: ^/fournisseur, roles: ROLE_FOURNISSEUR }
+        - { path: ^/livreur, roles: ROLE_LIVREUR }
+        - { path: ^/panier, roles: ROLE_CLIENT }
+        - { path: ^/commande, roles: ROLE_CLIENT }
+        - { path: ^/compte, roles: ROLE_USER }
+
+when@test:
+    security:
+        password_hashers:
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4
+                time_cost: 3
+                memory_cost: 10

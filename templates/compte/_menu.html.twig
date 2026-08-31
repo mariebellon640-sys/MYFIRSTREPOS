@@ -1,0 +1,9 @@
+<div class="list-group shadow-sm">
+    <a class="list-group-item list-group-item-action {{ actif == 'profil' ? 'active' }}" href="{{ path('app_compte') }}">Mon profil</a>
+    <a class="list-group-item list-group-item-action {{ actif == 'adresses' ? 'active' }}" href="{{ path('app_compte_adresses') }}">Mes adresses</a>
+    <a class="list-group-item list-group-item-action {{ actif == 'notifications' ? 'active' }}" href="{{ path('app_compte_notifications') }}">Notifications</a>
+    {% if is_granted('ROLE_CLIENT') %}
+        <a class="list-group-item list-group-item-action {{ actif == 'commandes' ? 'active' }}" href="{{ path('app_commande_historique') }}">Mes commandes</a>
+        <a class="list-group-item list-group-item-action {{ actif == 'fidelite' ? 'active' }}" href="{{ path('app_compte_fidelite') }}">Fidelite et parrainage</a>
+    {% endif %}
+</div>

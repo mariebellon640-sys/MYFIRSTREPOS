@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription — POISSON VIP{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h4 mb-3">Creer un compte</h1>
+                    {{ form_start(formulaire) }}
+                    <div class="row g-3">
+                        <div class="col-md-6">{{ form_row(formulaire.prenom) }}</div>
+                        <div class="col-md-6">{{ form_row(formulaire.nom) }}</div>
+                        <div class="col-md-6">{{ form_row(formulaire.email) }}</div>
+                        <div class="col-md-6">{{ form_row(formulaire.telephone) }}</div>
+                        <div class="col-md-6">{{ form_row(formulaire.motDePasse) }}</div>
+                        <div class="col-12">{{ form_row(formulaire.role) }}</div>
+                        <div class="col-md-6" data-profil="FOURNISSEUR">{{ form_row(formulaire.nomCommercial) }}</div>
+                        <div class="col-md-6" data-profil="FOURNISSEUR">{{ form_row(formulaire.typeFournisseur) }}</div>
+                        <div class="col-md-6" data-profil="LIVREUR">{{ form_row(formulaire.typeVehicule) }}</div>
+                        <div class="col-md-6" data-profil="LIVREUR">{{ form_row(formulaire.numeroPermis) }}</div>
+                    </div>
+                    <button class="btn btn-marine mt-4" type="submit">S'inscrire</button>
+                    {{ form_end(formulaire) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        const champsRole = document.querySelectorAll('input[name$="[role]"]');
+        const blocs = document.querySelectorAll('[data-profil]');
+
+        function afficherBlocs() {
+            const choisi = document.querySelector('input[name$="[role]"]:checked');
+            const valeur = choisi ? choisi.value : 'CLIENT';
+            blocs.forEach((bloc) => {
+                bloc.hidden = bloc.dataset.profil !== valeur;
+            });
+        }
+
+        champsRole.forEach((champ) => champ.addEventListener('change', afficherBlocs));
+        afficherBlocs();
+    </script>
+{% endblock %}

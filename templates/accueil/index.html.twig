@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}POISSON VIP — Poisson frais livre a Antananarivo{% endblock %}
+
+{% block body %}
+    <section class="p-4 p-md-5 mb-5 rounded-3 banniere text-white">
+        <div class="col-lg-7">
+            <h1 class="display-5 fw-bold">Du debarcadere a votre cuisine, en quelques heures</h1>
+            <p class="fs-5">Poisson frais, crustaces et mollusques selectionnes chez des mareyeurs et cooperatives partenaires. Tracabilite du lot de peche, indice de fraicheur affiche, paiement Mobile Money et livraison a domicile dans Antananarivo.</p>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ path('app_catalogue') }}" class="btn btn-warning btn-lg">Voir le catalogue</a>
+                {% if not app.user %}
+                    <a href="{{ path('app_inscription') }}" class="btn btn-outline-light btn-lg">Creer un compte</a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <section class="row g-4 mb-5">
+        {% set atouts = [
+            {icone: 'geo-alt', titre: 'Tracabilite du lot', texte: 'Lieu et heure de peche consultables avant l\'achat, QR code sur chaque colis.'},
+            {icone: 'thermometer-snow', titre: 'Indice de fraicheur', texte: 'Un indice degressif calcule depuis l\'heure de capture, avec retrait automatique des lots trop anciens.'},
+            {icone: 'phone', titre: 'Mobile Money', texte: 'MVola, Orange Money, Airtel Money ou paiement a la livraison.'},
+            {icone: 'truck', titre: 'Livraison suivie', texte: 'Creneau au choix et suivi du livreur en temps reel sur la carte.'}
+        ] %}
+        {% for atout in atouts %}
+            <div class="col-6 col-lg-3">
+                <div class="p-3 h-100 border rounded-3 bg-white">
+                    <i class="bi bi-{{ atout.icone }} fs-3 text-marine"></i>
+                    <h2 class="h6 mt-2">{{ atout.titre }}</h2>
+                    <p class="small text-muted mb-0">{{ atout.texte }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </section>
+
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-0">Arrivages du jour</h2>
+            <a href="{{ path('app_catalogue') }}" class="btn btn-sm btn-outline-marine">Tout le catalogue</a>
+        </div>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+            {% for produit in arrivages %}
+                <div class="col">{{ include('_partials/carte_produit.html.twig') }}</div>
+            {% else %}
+                <div class="col-12"><p class="text-muted">Aucun arrivage publie pour le moment.</p></div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="row g-4">
+        <div class="col-lg-6">
+            <h2 class="h5">Categories</h2>
+            <div class="list-group">
+                {% for categorie in categories %}
+                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                       href="{{ path('app_catalogue', {categorie: categorie.id}) }}">
+                        {{ categorie.nom }}
+                        <span class="badge bg-light text-muted">{{ categorie.produits|length }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <h2 class="h5">Zones livrees</h2>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle">
+                    <thead><tr><th>Zone</th><th>Commune</th><th class="text-end">Frais</th><th class="text-end">Delai</th></tr></thead>
+                    <tbody>
+                    {% for zone in zones %}
+                        <tr>
+                            <td>{{ zone.nomZone }}</td>
+                            <td class="text-muted">{{ zone.commune }}</td>
+                            <td class="text-end">{{ zone.fraisLivraison|ariary }}</td>
+                            <td class="text-end">{{ zone.delaiEstimeMinutes }} min</td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="4" class="text-muted">Zones en cours de parametrage.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+{% endblock %}
