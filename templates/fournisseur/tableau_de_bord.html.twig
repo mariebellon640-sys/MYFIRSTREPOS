@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace fournisseur — POISSON VIP{% endblock %}
+
+{% block body %}
+    <h1 class="h4 mb-1">{{ fournisseur.nomCommercial }}</h1>
+    <p class="text-muted">{{ fournisseur.typeFournisseur.libelle }} — <span class="badge bg-secondary">{{ fournisseur.statutValidation.libelle }}</span></p>
+
+    {{ include('fournisseur/_menu.html.twig', {actif: 'tableau'}) }}
+
+    {% if not fournisseur.peutPublier %}
+        <div class="alert alert-warning">Votre compte doit etre valide par un administrateur avant la publication de produits.</div>
+    {% endif %}
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100"><div class="card-body">
+                <p class="text-uppercase small text-muted mb-1">Chiffre d'affaires livre</p>
+                <p class="h4 mb-0 text-marine">{{ statistiques.chiffreAffaires|ariary }}</p>
+            </div></div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100"><div class="card-body">
+                <p class="text-uppercase small text-muted mb-1">Commandes en preparation</p>
+                <p class="h4 mb-0">{{ statistiques.commandesEnCours|length }}</p>
+            </div></div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100"><div class="card-body">
+                <p class="text-uppercase small text-muted mb-1">Alertes de stock</p>
+                <p class="h4 mb-0 text-danger">{{ statistiques.alertesStock|length }}</p>
+            </div></div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-muted">Ventes par produit</h2>
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead><tr><th>Produit</th><th class="text-end">Quantite</th><th class="text-end">CA</th></tr></thead>
+                            <tbody>
+                            {% for vente in statistiques.ventesParProduit %}
+                                <tr><td>{{ vente.nom }}</td><td class="text-end">{{ vente.quantite }}</td><td class="text-end">{{ vente.chiffreAffaires|ariary }}</td></tr>
+                            {% else %}
+                                <tr><td colspan="3" class="text-muted">Aucune vente enregistree.</td></tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-muted">Prevision de la demande (7 jours)</h2>
+                    <ul class="list-unstyled small mb-0">
+                        {% for prevision in statistiques.previsionDemande %}
+                            <li class="d-flex justify-content-between border-bottom py-1"><span>{{ prevision.nom }}</span><strong>{{ prevision.previsionHebdomadaire }}</strong></li>
+                        {% else %}
+                            <li class="text-muted">Historique insuffisant pour etablir une prevision.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-muted">Alertes de stock</h2>
+                    <ul class="list-unstyled small mb-0">
+                        {% for produit in statistiques.alertesStock %}
+                            <li class="d-flex justify-content-between border-bottom py-1">
+                                <a href="{{ path('fournisseur_produit_modifier', {id: produit.id}) }}">{{ produit.nom }}</a>
+                                <span class="text-danger">{{ produit.stockDisponible }} {{ produit.unite.libelle }}</span>
+                            </li>
+                        {% else %}
+                            <li class="text-muted">Aucune alerte en cours.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

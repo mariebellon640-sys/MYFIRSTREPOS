@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ adresse.id ? 'Modifier une adresse' : 'Nouvelle adresse' }} — POISSON VIP{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center g-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h5 mb-3">{{ adresse.id ? 'Modifier une adresse' : 'Nouvelle adresse' }}</h1>
+                    {{ form_start(formulaire) }}
+                    <div class="row g-3">
+                        <div class="col-md-6">{{ form_row(formulaire.libelle) }}</div>
+                        <div class="col-md-6">{{ form_row(formulaire.zoneLivraison) }}</div>
+                        <div class="col-md-6">{{ form_row(formulaire.quartier) }}</div>
+                        <div class="col-md-6">{{ form_row(formulaire.rue) }}</div>
+                        <div class="col-12">{{ form_row(formulaire.pointRepere) }}</div>
+                        <div class="col-12">{{ form_row(formulaire.estPrincipale) }}</div>
+                    </div>
+
+                    <p class="small text-muted mt-3 mb-1">Positionnez le point de livraison sur la carte pour aider le livreur.</p>
+                    <div id="carte-livreur" class="mb-3"></div>
+                    {{ form_widget(formulaire.latitude) }}
+                    {{ form_widget(formulaire.longitude) }}
+
+                    <button class="btn btn-marine" type="submit">Enregistrer</button>
+                    <a class="btn btn-link" href="{{ path('app_compte_adresses') }}">Annuler</a>
+                    {{ form_end(formulaire) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const champLatitude = document.getElementById('{{ formulaire.latitude.vars.id }}');
+        const champLongitude = document.getElementById('{{ formulaire.longitude.vars.id }}');
+        const depart = [parseFloat(champLatitude.value) || -18.8792, parseFloat(champLongitude.value) || 47.5079];
+
+        const carte = L.map('carte-livreur').setView(depart, 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; OpenStreetMap', maxZoom: 19}).addTo(carte);
+
+        const marqueur = L.marker(depart, {draggable: true}).addTo(carte);
+
+        function enregistrerPosition(position) {
+            champLatitude.value = position.lat.toFixed(7);
+            champLongitude.value = position.lng.toFixed(7);
+        }
+
+        marqueur.on('dragend', () => enregistrerPosition(marqueur.getLatLng()));
+        carte.on('click', (evenement) => {
+            marqueur.setLatLng(evenement.latlng);
+            enregistrerPosition(evenement.latlng);
+        });
+    </script>
+{% endblock %}

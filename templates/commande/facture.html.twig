@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recu {{ commande.numeroCommande }} — POISSON VIP{% endblock %}
+
+{% block body %}
+    <div class="card shadow-sm">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                <div>
+                    <h1 class="h4 mb-0 text-marine">POISSON VIP</h1>
+                    <p class="small text-muted mb-0">Antananarivo, Madagascar<br>support@poissonvip.mg</p>
+                </div>
+                <div class="text-end">
+                    <h2 class="h6 mb-1">Recu electronique</h2>
+                    <p class="small mb-0">{{ commande.numeroCommande }}<br>{{ commande.dateCommande|date('d/m/Y H:i') }}</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row small mb-3">
+                <div class="col-sm-6">
+                    <strong>Client</strong><br>
+                    {{ commande.client.utilisateur.nomComplet }}<br>
+                    {{ commande.client.utilisateur.telephone }}
+                </div>
+                <div class="col-sm-6">
+                    <strong>Adresse de livraison</strong><br>
+                    {{ commande.adresseLivraison }}
+                </div>
+            </div>
+
+            <table class="table table-sm">
+                <thead><tr><th>Designation</th><th class="text-center">Qte</th><th class="text-end">PU</th><th class="text-end">Montant</th></tr></thead>
+                <tbody>
+                {% for ligne in commande.lignes %}
+                    <tr>
+                        <td>{{ ligne.produit.nom }}{% if ligne.preparationChoisie %} — {{ ligne.preparationChoisie }}{% endif %}</td>
+                        <td class="text-center">{{ ligne.quantite }}</td>
+                        <td class="text-end">{{ ligne.prixUnitaire|ariary }}</td>
+                        <td class="text-end">{{ ligne.sousTotal|ariary }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                <tr><td colspan="3" class="text-end">Produits</td><td class="text-end">{{ commande.montantProduits|ariary }}</td></tr>
+                <tr><td colspan="3" class="text-end">Livraison</td><td class="text-end">{{ commande.fraisLivraison|ariary }}</td></tr>
+                {% if commande.montantReduction > 0 %}
+                    <tr><td colspan="3" class="text-end">Reduction</td><td class="text-end">-{{ commande.montantReduction|ariary }}</td></tr>
+                {% endif %}
+                <tr class="fw-bold"><td colspan="3" class="text-end">Total</td><td class="text-end">{{ commande.montantTotal|ariary }}</td></tr>
+                </tfoot>
+            </table>
+
+            {% if commande.paiement %}
+                <p class="small text-muted">Regle par {{ commande.paiement.modePaiement.libelle }} — statut {{ commande.paiement.statut.libelle }}{% if commande.paiement.referenceTransaction %}, reference {{ commande.paiement.referenceTransaction }}{% endif %}.</p>
+            {% endif %}
+
+            <button class="btn btn-marine d-print-none" type="button" onclick="window.print()">Imprimer</button>
+        </div>
+    </div>
+{% endblock %}

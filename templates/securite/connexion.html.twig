@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion — POISSON VIP{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h4 mb-3">Connexion</h1>
+
+                    {% if erreur %}
+                        <div class="alert alert-danger">{{ erreur.messageKey|trans(erreur.messageData, 'security') }}</div>
+                    {% endif %}
+
+                    <form method="post">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                        <div class="mb-3">
+                            <label class="form-label" for="identifiant">E-mail ou telephone</label>
+                            <input class="form-control" type="text" id="identifiant" name="identifiant" value="{{ derniere_saisie }}" autocomplete="username" required autofocus>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="mot_de_passe">Mot de passe</label>
+                            <input class="form-control" type="password" id="mot_de_passe" name="mot_de_passe" autocomplete="current-password" required>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="_remember_me" name="_remember_me">
+                            <label class="form-check-label" for="_remember_me">Rester connecte</label>
+                        </div>
+                        <button class="btn btn-marine w-100" type="submit">Se connecter</button>
+                    </form>
+
+                    <div class="d-flex justify-content-between mt-3 small">
+                        <a href="{{ path('app_mot_de_passe_oublie') }}">Mot de passe oublie ?</a>
+                        <a href="{{ path('app_inscription') }}">Creer un compte</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

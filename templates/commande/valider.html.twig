@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Validation de la commande — POISSON VIP{% endblock %}
+
+{% block body %}
+    <h1 class="h4 mb-4">Finaliser ma commande</h1>
+
+    {{ form_start(formulaire) }}
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-muted">Livraison</h2>
+                    {{ form_row(formulaire.adresseLivraison) }}
+                    {{ form_row(formulaire.creneauLivraison) }}
+                    <a class="small" href="{{ path('app_compte_adresse_nouvelle') }}">Ajouter une nouvelle adresse</a>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-muted">Paiement</h2>
+                    {{ form_row(formulaire.modePaiement) }}
+                    {{ form_row(formulaire.numeroPayeur) }}
+                    {{ form_row(formulaire.codePromo) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-muted">Votre panier</h2>
+                    <ul class="list-unstyled small mb-3">
+                        {% for item in panier.items %}
+                            <li class="d-flex justify-content-between border-bottom py-2">
+                                <span>{{ item.quantite }} &times; {{ item.produit.nom }}{% if item.preparationChoisie %} <em class="text-muted">({{ item.preparationChoisie }})</em>{% endif %}</span>
+                                <span>{{ item.sousTotal|ariary }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="d-flex justify-content-between fw-bold fs-5"><span>Total produits</span><span>{{ panier.montantProduits|ariary }}</span></div>
+                    <p class="small text-muted">Les frais de livraison de la zone selectionnee sont ajoutes a la confirmation.</p>
+                    <button class="btn btn-marine w-100" type="submit">Confirmer la commande</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ form_end(formulaire) }}
+{% endblock %}

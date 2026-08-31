@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande {{ commande.numeroCommande }} — POISSON VIP{% endblock %}
+
+{% block body %}
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div>
+            <h1 class="h4 mb-1">Commande {{ commande.numeroCommande }}</h1>
+            <p class="text-muted mb-0">Passee le {{ commande.dateCommande|date('d/m/Y a H:i') }}</p>
+        </div>
+        <span class="badge bg-{{ commande.statut.couleur }} fs-6">{{ commande.statut.libelle }}</span>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="table-responsive">
+                    <table class="table mb-0 align-middle">
+                        <thead class="table-light"><tr><th>Produit</th><th>Preparation</th><th class="text-center">Qte</th><th class="text-end">Prix</th><th class="text-end">Sous-total</th><th></th></tr></thead>
+                        <tbody>
+                        {% for ligne in commande.lignes %}
+                            <tr>
+                                <td><a class="text-decoration-none" href="{{ path('app_produit', {id: ligne.produit.id}) }}">{{ ligne.produit.nom }}</a></td>
+                                <td class="small text-muted">{{ ligne.preparationChoisie ?: 'Standard' }}</td>
+                                <td class="text-center">{{ ligne.quantite }}</td>
+                                <td class="text-end">{{ ligne.prixUnitaire|ariary }}</td>
+                                <td class="text-end">{{ ligne.sousTotal|ariary }}</td>
+                                <td class="text-end">
+                                    {% if commande.statut.value == 'LIVREE' %}
+                                        <a class="btn btn-sm btn-outline-marine" href="{{ path('app_avis_deposer', {id: commande.id, produit: ligne.produit.id}) }}">Noter</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% if commande.livraison %}
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="h6 text-uppercase text-muted">Livraison</h2>
+                        <p class="mb-1">Statut : <strong>{{ commande.livraison.statut.libelle }}</strong></p>
+                        {% if commande.livraison.livreur %}
+                            <p class="mb-1">Livreur : {{ commande.livraison.livreur.utilisateur.nomComplet }} ({{ commande.livraison.livreur.typeVehicule.libelle }})</p>
+                        {% endif %}
+                        <p class="mb-3">Adresse : {{ commande.adresseLivraison }}</p>
+                        <a class="btn btn-sm btn-marine" href="{{ path('app_suivi_livraison', {numero: commande.numeroCommande}) }}">Suivre sur la carte</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-muted">Montants</h2>
+                    <div class="d-flex justify-content-between"><span>Produits</span><span>{{ commande.montantProduits|ariary }}</span></div>
+                    <div class="d-flex justify-content-between"><span>Livraison ({{ commande.zoneLivraison.nomZone }})</span><span>{{ commande.fraisLivraison|ariary }}</span></div>
+                    {% if commande.montantReduction > 0 %}
+                        <div class="d-flex justify-content-between text-success"><span>Reduction{% if commande.codePromo %} ({{ commande.codePromo.code }}){% endif %}</span><span>-{{ commande.montantReduction|ariary }}</span></div>
+                    {% endif %}
+                    <hr>
+                    <div class="d-flex justify-content-between fw-bold fs-5"><span>Total</span><span>{{ commande.montantTotal|ariary }}</span></div>
+                </div>
+            </div>
+
+            {% if commande.paiement %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h2 class="h6 text-uppercase text-muted">Paiement</h2>
+                        <p class="mb-1">{{ commande.paiement.modePaiement.libelle }}</p>
+                        <p class="mb-0"><span class="badge bg-secondary">{{ commande.paiement.statut.libelle }}</span></p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="d-grid gap-2">
+                <a class="btn btn-outline-marine" href="{{ path('app_commande_facture', {numero: commande.numeroCommande}) }}">Recu electronique</a>
+                <a class="btn btn-outline-secondary" href="{{ path('app_commande_litige', {numero: commande.numeroCommande}) }}">Signaler un probleme</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

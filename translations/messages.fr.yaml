@@ -1,0 +1,25 @@
+nav:
+    catalogue: Catalogue
+    mes_commandes: Mes commandes
+    espace_fournisseur: Espace fournisseur
+    mes_courses: Mes courses
+    support: Support
+    administration: Administration
+    notifications: Notifications
+    panier: Panier
+    mon_profil: Mon profil
+    mes_adresses: Mes adresses
+    fidelite: Fidelite et parrainage
+    deconnexion: Se deconnecter
+    connexion: Connexion
+    inscription: Creer un compte
+    menu: Afficher le menu
+    langue: Langue
+
+pied:
+    accroche: Commande et livraison de poisson frais et de produits de la mer a Antananarivo, avec tracabilite des lots de peche et paiement Mobile Money.
+    navigation: Navigation
+    devenir_fournisseur: Devenir fournisseur
+    mentions_legales: Mentions legales
+    contact: Contact
+    droits: Tous droits reserves.

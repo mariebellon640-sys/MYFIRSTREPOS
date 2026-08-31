@@ -1,0 +1,5 @@
+<ul class="nav nav-pills mb-4 gap-2">
+    <li class="nav-item"><a class="nav-link {{ actif == 'tableau' ? 'active' }}" href="{{ path('fournisseur_tableau_de_bord') }}">Tableau de bord</a></li>
+    <li class="nav-item"><a class="nav-link {{ actif == 'produits' ? 'active' }}" href="{{ path('fournisseur_produits') }}">Mes produits</a></li>
+    <li class="nav-item"><a class="nav-link {{ actif == 'commandes' ? 'active' }}" href="{{ path('fournisseur_commandes') }}">Commandes recues</a></li>
+</ul>

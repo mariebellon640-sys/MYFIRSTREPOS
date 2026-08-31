@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau mot de passe — POISSON VIP{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h4 mb-3">Nouveau mot de passe</h1>
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label" for="identifiant">E-mail ou telephone</label>
+                            <input class="form-control" type="text" id="identifiant" name="identifiant" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="code">Code recu</label>
+                            <input class="form-control" type="text" id="code" name="code" inputmode="numeric" pattern="\d{6}" maxlength="6" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="mot_de_passe">Nouveau mot de passe</label>
+                            <input class="form-control" type="password" id="mot_de_passe" name="mot_de_passe" minlength="8" required>
+                        </div>
+                        <button class="btn btn-marine w-100" type="submit">Reinitialiser</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

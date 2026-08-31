@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Livraisons — POISSON VIP{% endblock %}
+
+{% block body %}
+    <h1 class="h4 mb-3">Affectation des livraisons</h1>
+    {{ include('admin/_menu.html.twig', {actif: 'livraisons'}) }}
+
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light"><tr><th>Commande</th><th>Zone</th><th>Creneau</th><th style="min-width: 20rem;">Affectation</th></tr></thead>
+                <tbody>
+                {% for livraison in enAttente %}
+                    <tr>
+                        <td>{{ livraison.commande.numeroCommande }}<div class="small text-muted">{{ livraison.commande.client.utilisateur.nomComplet }}</div></td>
+                        <td class="small text-muted">{{ livraison.commande.zoneLivraison.nomZone }}</td>
+                        <td class="small text-muted">{{ livraison.commande.creneauLivraisonDebut ? livraison.commande.creneauLivraisonDebut|date('d/m H:i') : 'Des que possible' }}</td>
+                        <td>
+                            <form method="post" action="{{ path('admin_livraison_affecter', {id: livraison.id}) }}" class="d-flex gap-2">
+                                <input type="hidden" name="_token" value="{{ csrf_token('affecter' ~ livraison.id) }}">
+                                <select class="form-select form-select-sm" name="livreur" aria-label="Livreur">
+                                    <option value="">Affectation automatique</option>
+                                    {% for livreur in livreursDisponibles %}
+                                        <option value="{{ livreur.id }}">{{ livreur.utilisateur.nomComplet }}{% if livreur.zoneAffectation %} — {{ livreur.zoneAffectation.nomZone }}{% endif %}</option>
+                                    {% endfor %}
+                                </select>
+                                <button class="btn btn-sm btn-marine" type="submit">Affecter</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="4" class="text-muted">Aucune livraison en attente d'affectation.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

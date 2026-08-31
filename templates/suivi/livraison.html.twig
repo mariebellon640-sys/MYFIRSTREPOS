@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Suivi de la livraison {{ commande.numeroCommande }} — POISSON VIP{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+{% endblock %}
+
+{% block body %}
+    <h1 class="h4 mb-1">Suivi de la livraison</h1>
+    <p class="text-muted">Commande {{ commande.numeroCommande }}</p>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div id="carte-suivi" class="shadow-sm"></div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-muted">Etat</h2>
+                    <p class="mb-1">Statut : <strong id="statut-livraison">{{ livraison.statut.libelle }}</strong></p>
+                    <p class="mb-1">Livreur : <span id="nom-livreur">{{ livraison.livreur ? livraison.livreur.utilisateur.nomComplet : 'en cours d\'affectation' }}</span></p>
+                    <p class="mb-3">Arrivee estimee : <span id="eta">{{ livraison.etaMinutes ?? '—' }}</span> min</p>
+                    <a class="btn btn-sm btn-outline-marine" href="{{ path('app_commande_detail', {numero: commande.numeroCommande}) }}">Detail de la commande</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const destination = [{{ livraison.latitudeLivraison ?? -18.8792 }}, {{ livraison.longitudeLivraison ?? 47.5079 }}];
+        const carte = L.map('carte-suivi').setView(destination, 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap',
+            maxZoom: 19
+        }).addTo(carte);
+
+        L.marker(destination).addTo(carte).bindPopup('Adresse de livraison');
+        let marqueurLivreur = null;
+
+        async function rafraichir() {
+            const reponse = await fetch('{{ path('app_suivi_position', {numero: commande.numeroCommande}) }}');
+            if (!reponse.ok) {
+                return;
+            }
+
+            const donnees = await reponse.json();
+            document.getElementById('statut-livraison').textContent = donnees.statutLibelle;
+            document.getElementById('eta').textContent = donnees.etaMinutes ?? '—';
+            if (donnees.livreur) {
+                document.getElementById('nom-livreur').textContent = donnees.livreur;
+            }
+
+            if (donnees.position) {
+                const point = [donnees.position.latitude, donnees.position.longitude];
+                if (marqueurLivreur) {
+                    marqueurLivreur.setLatLng(point);
+                } else {
+                    marqueurLivreur = L.marker(point).addTo(carte).bindPopup('Position du livreur');
+                }
+                carte.fitBounds([destination, point], {padding: [40, 40]});
+            }
+        }
+
+        rafraichir();
+        setInterval(rafraichir, 20000);
+    </script>
+{% endblock %}

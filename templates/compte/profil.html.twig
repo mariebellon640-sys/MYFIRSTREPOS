@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil — POISSON VIP{% endblock %}
+
+{% block body %}
+    <div class="row g-4">
+        <div class="col-lg-4">{{ include('compte/_menu.html.twig', {actif: 'profil'}) }}</div>
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h5 mb-3">Mon profil</h1>
+                    <form method="post">
+                        <input type="hidden" name="_token" value="{{ csrf_token('profil') }}">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="prenom">Prenom</label>
+                                <input class="form-control" type="text" id="prenom" name="prenom" value="{{ utilisateur.prenom }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="nom">Nom</label>
+                                <input class="form-control" type="text" id="nom" name="nom" value="{{ utilisateur.nom }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="email">E-mail</label>
+                                <input class="form-control" type="email" id="email" value="{{ utilisateur.email }}" disabled>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="telephone">Telephone</label>
+                                <input class="form-control" type="tel" id="telephone" name="telephone" value="{{ utilisateur.telephone }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="mot_de_passe">Nouveau mot de passe</label>
+                                <input class="form-control" type="password" id="mot_de_passe" name="mot_de_passe" minlength="8" autocomplete="new-password">
+                                <div class="form-text">Laissez vide pour conserver le mot de passe actuel.</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-marine mt-3" type="submit">Enregistrer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

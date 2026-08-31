@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catalogue — POISSON VIP{% endblock %}
+
+{% block body %}
+    <div class="row g-4">
+        <aside class="col-lg-3">
+            <form method="get" class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="h6 text-uppercase text-muted">Filtrer</h2>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="recherche">Recherche</label>
+                        <input class="form-control form-control-sm" type="search" id="recherche" name="recherche" value="{{ filtres.recherche }}" placeholder="Thon, crevette...">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="categorie">Categorie</label>
+                        <select class="form-select form-select-sm" id="categorie" name="categorie">
+                            <option value="">Toutes</option>
+                            {% for categorie in categories %}
+                                <option value="{{ categorie.id }}" {{ filtres.categorie == categorie.id ? 'selected' }}>{{ categorie.nom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="fournisseur">Fournisseur</label>
+                        <select class="form-select form-select-sm" id="fournisseur" name="fournisseur">
+                            <option value="">Tous</option>
+                            {% for fournisseur in fournisseurs %}
+                                <option value="{{ fournisseur.id }}" {{ filtres.fournisseur == fournisseur.id ? 'selected' }}>{{ fournisseur.nomCommercial }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label" for="prixMin">Prix min.</label>
+                            <input class="form-control form-control-sm" type="number" min="0" step="100" id="prixMin" name="prixMin" value="{{ filtres.prixMin }}">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label" for="prixMax">Prix max.</label>
+                            <input class="form-control form-control-sm" type="number" min="0" step="100" id="prixMax" name="prixMax" value="{{ filtres.prixMax }}">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="fraicheurMin">Fraicheur minimale : <span id="valeur-fraicheur">{{ filtres.fraicheurMin ?: 0 }}</span>/100</label>
+                        <input class="form-range" type="range" min="0" max="100" step="5" id="fraicheurMin" name="fraicheurMin" value="{{ filtres.fraicheurMin ?: 0 }}"
+                               oninput="document.getElementById('valeur-fraicheur').textContent = this.value">
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" value="1" id="enStock" name="enStock" {{ filtres.enStock ? 'checked' }}>
+                        <label class="form-check-label" for="enStock">En stock uniquement</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="tri">Trier par</label>
+                        <select class="form-select form-select-sm" id="tri" name="tri">
+                            <option value="">Nouveautes</option>
+                            <option value="prix_asc" {{ filtres.tri == 'prix_asc' ? 'selected' }}>Prix croissant</option>
+                            <option value="prix_desc" {{ filtres.tri == 'prix_desc' ? 'selected' }}>Prix decroissant</option>
+                            <option value="fraicheur" {{ filtres.tri == 'fraicheur' ? 'selected' }}>Fraicheur</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-marine btn-sm w-100" type="submit">Appliquer</button>
+                    <a class="btn btn-link btn-sm w-100" href="{{ path('app_catalogue') }}">Reinitialiser</a>
+                </div>
+            </form>
+        </aside>
+
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1 class="h4 mb-0">Catalogue</h1>
+                <span class="text-muted small">{{ pagination.getTotalItemCount }} produit(s)</span>
+            </div>
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
+                {% for produit in pagination %}
+                    <div class="col">{{ include('_partials/carte_produit.html.twig') }}</div>
+                {% else %}
+                    <div class="col-12">
+                        <div class="alert alert-light border">Aucun produit ne correspond a ces criteres.</div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="d-flex justify-content-center mt-4">{{ knp_pagination_render(pagination) }}</div>
+
+            {% if recommandations|length > 0 %}
+                <section class="mt-5">
+                    <h2 class="h5 mb-3">Recommande pour vous</h2>
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4">
+                        {% for produit in recommandations %}
+                            <div class="col">{{ include('_partials/carte_produit.html.twig') }}</div>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
